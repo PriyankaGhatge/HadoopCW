@@ -1,0 +1,78 @@
+import java.io.IOException;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.FloatWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Mapper.Context;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.Reducer;
+
+
+
+
+public class VarianceEx {
+	
+	public static class MapperEx extends Mapper<LongWritable,Text,Text,FloatWritable>  {
+		public void map(LongWritable key, Text value, Context context)
+	      {
+			try{
+			String arr[]= value.toString().split(",");
+			
+			float maxval = Float.valueOf(arr[4]);
+			float minval = Float.valueOf(arr[5]);
+			
+			float var=((maxval-minval)/minval)*100;
+			
+			context.write(new Text(arr[1]), new FloatWritable(var));
+			
+			}
+			catch(Exception e){
+				e.getMessage();
+			}
+	      }
+	}
+			public static class ReducerEx extends Reducer<Text,FloatWritable,Text,FloatWritable>  {
+				FloatWritable mVal= new FloatWritable();
+				
+				public void reduce(Text key, Iterable<FloatWritable> value, Context context) throws IOException, InterruptedException
+			      {	
+			float maxpercent=0,temp=0;
+			
+			for(FloatWritable val:value){
+				
+				temp=val.get();
+				if(temp>maxpercent){
+					maxpercent=temp;
+				}
+			}
+			mVal.set(maxpercent);
+			context.write(key, mVal);
+			      }
+	     
+			}
+	      
+	      
+	
+	public static void main(String[] args) throws Exception {
+		
+		 Configuration conf = new Configuration();
+		    Job job = Job.getInstance(conf, "Volume Count");
+		    job.setJarByClass(VarianceEx.class);
+		    job.setMapperClass(MapperEx.class);
+		    job.setReducerClass(ReducerEx.class);
+		    job.setOutputKeyClass(Text.class);
+		    job.setOutputValueClass(FloatWritable.class);
+		    FileInputFormat.addInputPath(job, new Path(args[0]));
+		    FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		    System.exit(job.waitForCompletion(true) ? 0 : 1);
+		  }
+
+	
+
+	}
+

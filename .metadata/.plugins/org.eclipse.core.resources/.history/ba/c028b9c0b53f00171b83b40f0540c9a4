@@ -1,0 +1,34 @@
+import org.apache.hadoop.io.FloatWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Mapper.Context;
+
+
+public class VarianceEx {
+	
+	public static class MappperEx extends Mapper<LongWritable,Text,Text,FloatWritable>  {
+		public void map(FloatWritable key, Text value, Context context)
+	      {
+			try{
+			String arr[]= value.toString().split(",");
+			
+			float maxval = Float.valueOf(arr[4]);
+			float minval = Float.valueOf(arr[5]);
+			
+			float var=((maxval-minval)/minval)*100;
+			
+			context.write(new Text(arr[1]), new FloatWritable(var));
+			
+			}
+			catch{}
+	      }
+	}
+
+	
+	public static void main(String[] args) {
+		
+
+	}
+
+}

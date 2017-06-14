@@ -1,0 +1,219 @@
+/*import java.io.IOException;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Partitioner;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+
+
+
+public class Second {
+
+	public static class MapPartitioner extends Mapper<LongWritable, Text, Text, Text>
+
+	{
+
+		public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException
+
+		{
+
+			String[] tokens = value.toString().split("-");
+			String emp_dept = tokens[3].toString();
+			String emp_id_n_sal = tokens[0]+"-"+tokens[1]+"-"+tokens[4];
+			context.write(new Text(emp_dept), new Text(emp_id_n_sal));
+
+		}
+
+	}
+
+	public static class DeptPartitioner extends Partitioner<Text, Text>
+
+	{
+
+		@Override
+		public int getPartition(Text key, Text value, int numReduceTasks)
+
+		{
+
+			String emp_dept = key.toString();
+			if(numReduceTasks == 0)
+
+				return 0;
+
+			if(key.equals(new Text("Developer")))
+
+			{
+				return 0;
+			}
+			else if(key.equals(new Text("Marketing")))
+
+			{
+				return 1 % numReduceTasks;
+			}
+			else if(key.equals(new Text("Sales")))
+
+			{
+				return 1 % numReduceTasks;
+			}
+			else if(key.equals(new Text("HR")))
+
+			{
+				return 1 % numReduceTasks;
+			}
+			else
+				return 2 % numReduceTasks;
+		}
+
+	}
+
+	static class ReduceParitioner extends Reducer<Text, Text, Text, Text>
+
+	{
+
+		@Override
+		public void reduce(Text key, Iterable<Text> values, Context context)throws IOException, InterruptedException
+
+		{
+
+			int max_sal = Integer.MIN_VALUE;
+			String emp_name = " ";
+			String emp_dept = " ";
+			String emp_id = " ";
+			int emp_sal = 0;
+			for(Text val: values)
+
+			{
+
+				String [] valTokens = val.toString().split("-");
+				emp_sal = Integer.parseInt(valTokens[3]);
+				if(emp_sal > max_sal)
+				{
+
+					emp_id = valTokens[0];
+					emp_name = valTokens[1];
+					emp_dept =key.toString();
+					max_sal = emp_sal;
+
+				}
+			}
+
+			context.write(new Text(emp_dept), new Text("id=>"+emp_id+",name=>"+emp_name+",sal=>"+max_sal));
+
+		}
+	}
+
+
+	public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+
+		Configuration conf = new Configuration();
+		Job job=Job.getInstance(conf);
+		job.setJarByClass(Second.class);
+		FileInputFormat.setInputPaths(job, new Path(args[0]));
+		FileOutputFormat.setOutputPath(job,new Path(args[1]));
+		job.setMapperClass(MapPartitioner.class);
+		job.setMapOutputKeyClass(Text.class);
+		job.setMapOutputValueClass(Text.class);
+		job.setPartitionerClass(DeptPartitioner.class);
+		job.setReducerClass(ReduceParitioner.class);
+		job.setNumReduceTasks(3);
+		job.setInputFormatClass(TextInputFormat.class);
+		job.setOutputFormatClass(TextOutputFormat.class);
+		job.setOutputKeyClass(Text.class);
+		job.setOutputValueClass(Text.class);
+		System.exit(job.waitForCompletion(true)? 0 : 1);
+
+
+
+
+
+
+	}
+
+}
+
+
+
+
+*/
+
+import java.io.IOException;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+
+
+public class Second{
+	
+	public static class MapperEx extends Mapper<Object, Text, Text, Text> {
+
+		public void map(Object key,Text value,Context ctx) throws IOException, InterruptedException
+		{
+		String[] arr=value.toString().split("-");
+		String dept = arr[3];
+		String Emp_name = arr[1];
+		int sal = Integer.parseInt(arr[4]);
+		ctx.write(new Text(dept), new Text(Emp_name+ "-" +sal));
+		}
+		}
+	
+	public static class ReducerEx extends Reducer<Text, Text,Text, Text>
+	{
+	public void reduce(Text key,Iterable<Text> itr,Context context) throws IOException, InterruptedException
+	{ 
+	int maxsal=0;
+	String s= "";
+	String sal ="";
+
+	for (Text val : itr){
+	String arr[] = val.toString().split("-");
+	if (maxsal < Integer.parseInt(arr[1]))
+	{
+	maxsal = Integer.parseInt(arr[1]);
+	sal = arr[1].toString();
+
+	s = arr[0].toString();
+
+	}
+
+	}
+	context.write(new Text(key), new Text(s.toString() +"-" + sal.toString()));
+
+	}
+
+	}
+	
+	
+public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException{
+		
+	
+	Configuration conf=new Configuration();
+	Job job=Job.getInstance(conf);
+	job.setJarByClass(Second.class);
+	job.setMapperClass(MapperEx.class);
+	job.setReducerClass(ReducerEx.class);
+	
+	job.setOutputKeyClass(Text.class);
+	job.setOutputValueClass(Text.class);
+	
+	FileInputFormat.addInputPath(job, new Path(args[0]));
+	FileOutputFormat.setOutputPath(job, new Path(args[1]));
+	System.exit(job.waitForCompletion(true) ? 0 : 1);
+	
+}
+}
