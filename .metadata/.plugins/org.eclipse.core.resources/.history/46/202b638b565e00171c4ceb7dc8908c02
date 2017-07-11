@@ -1,0 +1,39 @@
+import java.io.IOException;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+
+
+public class Question1a {
+	
+	public static class MapperEx extends Mapper<LongWritable,Text,Text,IntWritable>
+		{
+		
+		public void map(LongWritable k,Text v, Context con) throws IOException, InterruptedException{
+			
+			String Line =v.toString();
+			String[] arr =Line.split("\t");
+			
+			String SOC= arr[3];
+			String Job_Title= arr[4];
+			int count=0;
+			if(Job_Title.contains("DATA SCIENTIST")){
+				count++;
+			}
+			con.write(new Text(SOC),new IntWritable(count));
+			
+		}
+			
+		}
+
+	
+
+	
+	public static void main(String[] args) {
+		
+
+	}
+
+}

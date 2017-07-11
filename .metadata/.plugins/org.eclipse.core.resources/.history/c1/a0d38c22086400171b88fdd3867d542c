@@ -1,0 +1,37 @@
+import java.io.IOException;
+
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Mapper.Context;
+
+
+public class Question5a {
+	
+public static class MapperEx extends Mapper<LongWritable, Text, Text, Text> {
+
+		
+		public void map(LongWritable key, Text value, Context con)throws IOException, InterruptedException {
+			String Line = value.toString();
+			String[] arr =Line.split("\t");
+			String Petitions = arr[3];
+			String job_title = arr[2];
+			String year= arr[7];
+			
+			
+				con.write(new Text(job_title+'-'+year), new Text(Petitions));
+			
+		}
+		}
+
+tring year = rec[7];
+String job_title = rec[4];
+String petitions = rec[3];
+con.write(new Text(year + '\t' + job_title), new Text(petitions));
+
+	public static void main(String[] args) {
+		
+
+	}
+
+}

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
-	<item value="/usr/local/hive/lib" key="org.eclipse.jdt.ui.lastextjar"/>
+	<item value="/usr/local/hadoop/share/hadoop/common" key="org.eclipse.jdt.ui.lastextjar"/>
 	<item value="0" key="org.eclipse.jdt.ui.last.selected.jre.kind2"/>
 	<section name="org.eclipse.ltk.ui.refactoring.settings">
 		<item value="false" key="updateSimilarElements"/>
@@ -71,11 +71,11 @@
 		<item value="false" key="JarManifestWizardPage.SAVE_MANIFEST"/>
 		<item value="false" key="JarPackageWizardPage.EXPORT_OUTPUT_FOLDER"/>
 		<list key="JarPackageWizardPage.DESTINATION_NAMES_ID">
+			<item value="/home/sherlock/H1b.jar"/>
+			<item value="/home/sherlock/h1b.jar"/>
 			<item value="/home/sherlock/hw1.jar"/>
 			<item value="/home/sherlock/udfhive.jar"/>
 			<item value="/home/sherlock/pj1.jar"/>
-			<item value="/home/sherlock/hw.jar"/>
-			<item value="/home/sherlock/Ex.jar"/>
 		</list>
 	</section>
 	<section name="JavaElementSearchActions">
